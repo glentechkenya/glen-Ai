@@ -1,0 +1,80 @@
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif}
+body{
+  background:#04060a;
+  color:#fff;
+  height:100vh;
+  overflow:hidden;
+}
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+}
+
+/* APP */
+.app{
+  max-width:700px;
+  margin:40px auto;
+  background:rgba(255,255,255,.05);
+  border-radius:22px;
+  box-shadow:0 0 60px rgba(0,255,255,.35);
+  display:flex;
+  flex-direction:column;
+  height:85vh;
+  backdrop-filter:blur(8px);
+}
+
+.header{
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.status-dot{
+  width:10px;height:10px;
+  background:#00ff9c;
+  border-radius:50%;
+  box-shadow:0 0 12px #00ff9c;
+}
+.sys{
+  font-size:13px;
+  color:#00ffe1;
+}
+
+.chat{
+  flex:1;
+  padding:20px;
+  overflow-y:auto;
+}
+.msg{
+  margin-bottom:14px;
+  font-size:14px;
+  line-height:1.5;
+}
+.msg.ai{color:#00ffe1}
+.msg.user{color:#00b3ff;text-align:right}
+
+.input-box{
+  display:flex;
+  padding:15px;
+  gap:10px;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+input{
+  flex:1;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  background:#0b0f14;
+  color:#fff;
+}
+button{
+  padding:12px 18px;
+  border:none;
+  border-radius:12px;
+  background:#00ffe1;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
