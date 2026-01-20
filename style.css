@@ -5,43 +5,50 @@ body{
   height:100vh;
   overflow:hidden;
 }
-canvas{
-  position:fixed;
-  inset:0;
-  z-index:-1;
-}
+canvas{position:fixed;inset:0;z-index:-1}
 
 /* APP */
 .app{
-  max-width:700px;
-  margin:40px auto;
-  background:rgba(255,255,255,.05);
-  border-radius:22px;
-  box-shadow:0 0 60px rgba(0,255,255,.35);
+  max-width:720px;
+  margin:30px auto;
+  height:90vh;
   display:flex;
   flex-direction:column;
-  height:85vh;
+  background:rgba(255,255,255,.05);
+  border-radius:24px;
+  box-shadow:0 0 60px rgba(0,255,255,.35);
   backdrop-filter:blur(8px);
 }
 
+/* HEADER */
 .header{
-  padding:16px 20px;
+  padding:18px 22px;
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  gap:10px;
   border-bottom:1px solid rgba(255,255,255,.1);
 }
-.status-dot{
-  width:10px;height:10px;
+.logo{
+  font-size:16px;
+  color:#00ffe1;
+  text-shadow:0 0 15px #00ffe1;
+}
+.logo span{color:#00b3ff}
+.online{
+  font-size:11px;
+  color:#00ff9c;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.dot{
+  width:8px;height:8px;
   background:#00ff9c;
   border-radius:50%;
-  box-shadow:0 0 12px #00ff9c;
-}
-.sys{
-  font-size:13px;
-  color:#00ffe1;
+  box-shadow:0 0 10px #00ff9c;
 }
 
+/* CHAT */
 .chat{
   flex:1;
   padding:20px;
@@ -50,15 +57,31 @@ canvas{
 .msg{
   margin-bottom:14px;
   font-size:14px;
-  line-height:1.5;
+  line-height:1.6;
 }
 .msg.ai{color:#00ffe1}
 .msg.user{color:#00b3ff;text-align:right}
+.typing{
+  display:inline-flex;
+  gap:4px;
+}
+.typing span{
+  animation:blink 1.4s infinite both;
+}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
 
+@keyframes blink{
+  0%{opacity:.2}
+  20%{opacity:1}
+  100%{opacity:.2}
+}
+
+/* INPUT */
 .input-box{
   display:flex;
-  padding:15px;
   gap:10px;
+  padding:16px;
   border-top:1px solid rgba(255,255,255,.1);
 }
 input{
@@ -70,7 +93,7 @@ input{
   color:#fff;
 }
 button{
-  padding:12px 18px;
+  padding:12px 20px;
   border:none;
   border-radius:12px;
   background:#00ffe1;
@@ -78,3 +101,4 @@ button{
   font-weight:bold;
   cursor:pointer;
 }
+button:hover{opacity:.85}
