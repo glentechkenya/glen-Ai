@@ -13,10 +13,16 @@ async function sendMessage() {
   const message = input.value.trim();
   if (!message) return;
 
+  // User message
   addMessage(message, "user");
   input.value = "";
 
-  addMessage("Thinking...", "bot");
+  // Thinking message
+  const thinkingDiv = document.createElement("div");
+  thinkingDiv.className = "msg bot";
+  thinkingDiv.innerText = "Thinking...";
+  chat.appendChild(thinkingDiv);
+  chat.scrollTop = chat.scrollHeight;
 
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -24,27 +30,44 @@ async function sendMessage() {
       headers: {
         "Authorization": "Bearer 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",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://glenai.local",
+        "HTTP-Referer": window.location.href,
         "X-Title": "GlenAI"
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash-exp:free",
+        model: "meta-llama/llama-3-8b-instruct:free",
         messages: [
-          { role: "user", content: message }
+          {
+            role: "system",
+            content: "You are GlenAI, a helpful futuristic AI created by Glen Tech."
+          },
+          {
+            role: "user",
+            content: message
+          }
         ]
       })
     });
 
     const data = await response.json();
 
-    // remove "Thinking..."
-    chat.removeChild(chat.lastChild);
+    // Remove thinking
+    chat.removeChild(thinkingDiv);
+
+    // Safe handling
+    if (!data.choices || !data.choices.length) {
+      addMessage(
+        "API Error: " + (data.error?.message || "No response from model"),
+        "bot"
+      );
+      console.log("OpenRouter response:", data);
+      return;
+    }
 
     const reply = data.choices[0].message.content;
     addMessage(reply, "bot");
 
   } catch (error) {
-    chat.removeChild(chat.lastChild);
-    addMessage("Error: " + error.message, "bot");
+    chat.removeChild(thinkingDiv);
+    addMessage("Network Error: " + error.message, "bot");
   }
 }
