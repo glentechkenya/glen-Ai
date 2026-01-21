@@ -6,115 +6,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-:root {
-  --neon:#00f7ff;
-  --bg:#040607;
-}
+body{margin:0;font-family:system-ui;background:#050608;color:#fff;height:100vh;display:flex;flex-direction:column}
+#boot{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;z-index:9}
+#boot h1{color:#00f7ff;font-size:32px;animation:pulse 1.5s infinite}
+@keyframes pulse{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}
 
-body {
-  margin:0;
-  font-family:system-ui;
-  background:radial-gradient(circle at top,#0b1a1f,var(--bg));
-  color:#fff;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-header {
-  height:60px;
-  display:flex;
-  align-items:center;
-  padding:0 16px;
-  border-bottom:1px solid #0ff3;
-}
-
-.logo {
-  font-weight:700;
-  color:var(--neon);
-  animation:glow 2s infinite alternate;
-}
-
-@keyframes glow {
-  from { text-shadow:0 0 5px var(--neon); }
-  to { text-shadow:0 0 20px var(--neon); }
-}
-
-#chat {
-  flex:1;
-  padding:16px;
-  overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.msg {
-  max-width:85%;
-  padding:12px 14px;
-  border-radius:14px;
-  animation:fade .3s;
-}
-
-.user {
-  align-self:flex-end;
-  background:linear-gradient(135deg,#00f7ff,#00bcd4);
-  color:#000;
-}
-
-.bot {
-  background:rgba(255,255,255,.06);
-  border:1px solid #0ff3;
-}
-
-footer {
-  display:flex;
-  gap:8px;
-  padding:12px;
-  border-top:1px solid #0ff3;
-}
-
-input {
-  flex:1;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #0ff3;
-  background:transparent;
-  color:#fff;
-}
-
-button {
-  padding:12px 18px;
-  border:none;
-  border-radius:10px;
-  background:var(--neon);
-  font-weight:600;
-}
-
-.typing {
-  opacity:.7;
-  font-style:italic;
-}
-
-@keyframes fade {
-  from{opacity:0;transform:translateY(4px)}
-  to{opacity:1}
-}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid #0ff3}
+.menu{cursor:pointer;font-size:22px}
+#chat{flex:1;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:85%;padding:12px;border-radius:14px}
+.user{align-self:flex-end;background:#00f7ff;color:#000}
+.bot{background:#ffffff10;border:1px solid #0ff3}
+footer{display:flex;gap:8px;padding:12px;border-top:1px solid #0ff3}
+input{flex:1;padding:12px;border-radius:10px;background:#000;border:1px solid #0ff3;color:#fff}
+button{padding:12px 14px;border-radius:10px;border:none;background:#00f7ff}
 </style>
 </head>
 
 <body>
+<div id="boot"><h1>GLENAI ⚡</h1></div>
+
 <header>
-  <div class="logo">GLENAI ⚡</div>
+  <div>GLENAI</div>
+  <div class="menu" onclick="adminLogin()">☰</div>
 </header>
 
 <div id="chat"></div>
 
 <footer>
-  <input id="input" placeholder="Ask anything…" />
+  <button onclick="startVoice()">🎙️</button>
+  <input id="input" placeholder="Speak or type…" />
   <button onclick="sendMessage()">Send</button>
 </footer>
 
 <script src="script.js"></script>
+<script>
+setTimeout(()=>boot.remove(),1800)
+</script>
 </body>
 </html>
