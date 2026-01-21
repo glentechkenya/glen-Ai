@@ -6,90 +6,166 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    :root {
+      --neon: #00f7ff;
+      --bg: #050608;
+      --glass: rgba(255, 255, 255, 0.05);
+      --border: rgba(0, 247, 255, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0a0a0a;
-      color: #fff;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(circle at top, #0b1a1f, var(--bg));
+      color: #eaeaea;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      height: 100vh;
     }
 
+    /* ===== HEADER ===== */
     header {
-      padding: 15px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-      background: #111;
-      border-bottom: 1px solid #222;
-      color: #00f7ff;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      background: linear-gradient(180deg, #050b0f, #050608);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
     }
 
+    header .logo {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--neon);
+    }
+
+    header .sub {
+      margin-left: 10px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+
+    /* ===== CHAT ===== */
     #chat {
       flex: 1;
-      padding: 15px;
+      padding: 20px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
+      gap: 14px;
     }
 
     .msg {
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      max-width: 80%;
-      white-space: pre-wrap;
+      max-width: 82%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease;
+      word-wrap: break-word;
     }
 
     .user {
-      background: #00f7ff;
-      color: #000;
       align-self: flex-end;
+      background: linear-gradient(135deg, #00f7ff, #00bcd4);
+      color: #000;
+      box-shadow: 0 0 25px rgba(0, 247, 255, 0.4);
     }
 
     .bot {
-      background: #1a1a1a;
-      border: 1px solid #222;
       align-self: flex-start;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
     }
 
+    /* ===== CODE BLOCKS ===== */
+    pre {
+      background: #020406;
+      border: 1px solid #0ff3;
+      border-radius: 10px;
+      padding: 14px;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    code {
+      color: #00f7ff;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+    }
+
+    /* ===== INPUT ===== */
     footer {
       display: flex;
-      padding: 10px;
-      border-top: 1px solid #222;
-      background: #111;
+      gap: 10px;
+      padding: 14px;
+      border-top: 1px solid var(--border);
+      background: linear-gradient(180deg, #050608, #040404);
+      backdrop-filter: blur(12px);
     }
 
     input {
       flex: 1;
-      padding: 10px;
-      border-radius: 5px;
-      border: none;
-      outline: none;
+      padding: 14px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: #fff;
       font-size: 16px;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #aaa;
     }
 
     button {
-      margin-left: 10px;
-      padding: 10px 16px;
-      background: #00f7ff;
+      padding: 14px 22px;
+      border-radius: 12px;
       border: none;
-      border-radius: 5px;
+      background: linear-gradient(135deg, #00f7ff, #00bcd4);
+      color: #000;
+      font-weight: 600;
       cursor: pointer;
-      font-weight: bold;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 0 20px rgba(0, 247, 255, 0.4);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 30px rgba(0, 247, 255, 0.7);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
 
 <body>
-  <header>GlenAI 🤖</header>
+  <header>
+    <div class="logo">GLENAI</div>
+    <div class="sub">FUTURISTIC AI • GLEN TECH</div>
+  </header>
 
   <div id="chat"></div>
 
   <footer>
-    <input id="input" placeholder="Ask GlenAI..." />
-    <button onclick="sendMessage()">Send</button>
+    <input id="input" placeholder="Ask GlenAI…" />
+    <button onclick="sendMessage()">SEND</button>
   </footer>
 
   <script src="script.js"></script>
