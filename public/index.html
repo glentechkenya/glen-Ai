@@ -1,4 +1,3 @@
-<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,28 +7,30 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <canvas id="particles"></canvas>
 
-  <header class="header">
-    <div class="title">GLENAI</div>
-    <div class="subtitle">developed by glentechkenya</div>
-    <button class="menu-btn" onclick="toggleMenu()">☰</button>
-  </header>
+<canvas id="particles"></canvas>
 
-  <!-- MENU (LINKS ONLY) -->
-  <div id="panel">
-    <button onclick="openLink(1)">Join our WhatsApp Group</button>
-    <button onclick="openLink(2)">Join our WhatsApp Channel</button>
+<header class="top">
+  <div class="logo">
+    <span class="glow">GLENAI</span>
+    <small>developed by glentechkenya</small>
   </div>
+  <button class="menu" onclick="toggleMenu()">☰</button>
+</header>
 
-  <main id="chat"></main>
+<div id="panel">
+  <button onclick="openLink(1)">Join our WhatsApp Group</button>
+  <button onclick="openLink(2)">Join our WhatsApp Channel</button>
+</div>
 
-  <footer class="input-bar">
-    <input id="input" placeholder="Message GlenAI..." />
-    <button onclick="sendMessage()">➤</button>
-    <button onclick="chat.innerHTML=''">Clear</button>
-  </footer>
+<main id="chat"></main>
 
-  <script src="script.js"></script>
+<footer class="bar">
+  <input id="input" placeholder="Message GlenAI…" />
+  <button onclick="sendMessage()">➤</button>
+  <button onclick="chat.innerHTML=''">✖</button>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>
