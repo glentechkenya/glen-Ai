@@ -1,173 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>GlenAI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>GlenAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    :root {
-      --neon: #00f7ff;
-      --bg: #050608;
-      --glass: rgba(255, 255, 255, 0.05);
-      --border: rgba(0, 247, 255, 0.25);
-    }
+<style>
+:root {
+  --neon:#00f7ff;
+  --bg:#040607;
+}
 
-    * {
-      box-sizing: border-box;
-    }
+body {
+  margin:0;
+  font-family:system-ui;
+  background:radial-gradient(circle at top,#0b1a1f,var(--bg));
+  color:#fff;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
 
-    body {
-      margin: 0;
-      font-family: "Segoe UI", system-ui, sans-serif;
-      background: radial-gradient(circle at top, #0b1a1f, var(--bg));
-      color: #eaeaea;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+header {
+  height:60px;
+  display:flex;
+  align-items:center;
+  padding:0 16px;
+  border-bottom:1px solid #0ff3;
+}
 
-    /* ===== HEADER ===== */
-    header {
-      height: 64px;
-      display: flex;
-      align-items: center;
-      padding: 0 20px;
-      background: linear-gradient(180deg, #050b0f, #050608);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-    }
+.logo {
+  font-weight:700;
+  color:var(--neon);
+  animation:glow 2s infinite alternate;
+}
 
-    header .logo {
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: var(--neon);
-    }
+@keyframes glow {
+  from { text-shadow:0 0 5px var(--neon); }
+  to { text-shadow:0 0 20px var(--neon); }
+}
 
-    header .sub {
-      margin-left: 10px;
-      font-size: 12px;
-      opacity: 0.6;
-    }
+#chat {
+  flex:1;
+  padding:16px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
 
-    /* ===== CHAT ===== */
-    #chat {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+.msg {
+  max-width:85%;
+  padding:12px 14px;
+  border-radius:14px;
+  animation:fade .3s;
+}
 
-    .msg {
-      max-width: 82%;
-      padding: 14px 16px;
-      border-radius: 14px;
-      line-height: 1.5;
-      animation: fadeIn 0.3s ease;
-      word-wrap: break-word;
-    }
+.user {
+  align-self:flex-end;
+  background:linear-gradient(135deg,#00f7ff,#00bcd4);
+  color:#000;
+}
 
-    .user {
-      align-self: flex-end;
-      background: linear-gradient(135deg, #00f7ff, #00bcd4);
-      color: #000;
-      box-shadow: 0 0 25px rgba(0, 247, 255, 0.4);
-    }
+.bot {
+  background:rgba(255,255,255,.06);
+  border:1px solid #0ff3;
+}
 
-    .bot {
-      align-self: flex-start;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(10px);
-    }
+footer {
+  display:flex;
+  gap:8px;
+  padding:12px;
+  border-top:1px solid #0ff3;
+}
 
-    /* ===== CODE BLOCKS ===== */
-    pre {
-      background: #020406;
-      border: 1px solid #0ff3;
-      border-radius: 10px;
-      padding: 14px;
-      overflow-x: auto;
-      margin-top: 10px;
-    }
+input {
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #0ff3;
+  background:transparent;
+  color:#fff;
+}
 
-    code {
-      color: #00f7ff;
-      font-family: Consolas, monospace;
-      font-size: 14px;
-    }
+button {
+  padding:12px 18px;
+  border:none;
+  border-radius:10px;
+  background:var(--neon);
+  font-weight:600;
+}
 
-    /* ===== INPUT ===== */
-    footer {
-      display: flex;
-      gap: 10px;
-      padding: 14px;
-      border-top: 1px solid var(--border);
-      background: linear-gradient(180deg, #050608, #040404);
-      backdrop-filter: blur(12px);
-    }
+.typing {
+  opacity:.7;
+  font-style:italic;
+}
 
-    input {
-      flex: 1;
-      padding: 14px;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: #fff;
-      font-size: 16px;
-      outline: none;
-    }
-
-    input::placeholder {
-      color: #aaa;
-    }
-
-    button {
-      padding: 14px 22px;
-      border-radius: 12px;
-      border: none;
-      background: linear-gradient(135deg, #00f7ff, #00bcd4);
-      color: #000;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      box-shadow: 0 0 20px rgba(0, 247, 255, 0.4);
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 30px rgba(0, 247, 255, 0.7);
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(4px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
+@keyframes fade {
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1}
+}
+</style>
 </head>
 
 <body>
-  <header>
-    <div class="logo">GLENAI</div>
-    <div class="sub">FUTURISTIC AI • GLEN TECH</div>
-  </header>
+<header>
+  <div class="logo">GLENAI ⚡</div>
+</header>
 
-  <div id="chat"></div>
+<div id="chat"></div>
 
-  <footer>
-    <input id="input" placeholder="Ask GlenAI…" />
-    <button onclick="sendMessage()">SEND</button>
-  </footer>
+<footer>
+  <input id="input" placeholder="Ask anything…" />
+  <button onclick="sendMessage()">Send</button>
+</footer>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
