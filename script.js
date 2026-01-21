@@ -1,127 +1,50 @@
-/* ================= PARTICLES ================= */
-const c = document.getElementById("particles");
-const x = c.getContext("2d");
-
-function resize(){
-  c.width = innerWidth;
-  c.height = innerHeight;
-}
-window.addEventListener("resize", resize);
-resize();
-
-const particles = Array.from({length:80}, () => ({
-  x: Math.random()*c.width,
-  y: Math.random()*c.height,
-  vx:(Math.random()-.5)*0.4,
-  vy:(Math.random()-.5)*0.4,
-  r: Math.random()*2+1
-}));
-
-(function animate(){
-  x.clearRect(0,0,c.width,c.height);
-  x.fillStyle="#00ffe1";
-  particles.forEach(p=>{
-    p.x+=p.vx; p.y+=p.vy;
-    if(p.x<0||p.x>c.width) p.vx*=-1;
-    if(p.y<0||p.y>c.height) p.vy*=-1;
-    x.globalAlpha=0.6;
-    x.beginPath();
-    x.arc(p.x,p.y,p.r,0,Math.PI*2);
-    x.fill();
-  });
-  requestAnimationFrame(animate);
-})();
-
-/* ================= CHAT ================= */
 const chat = document.getElementById("chat");
 const input = document.getElementById("input");
-const sendBtn = document.getElementById("send");
 
-/* 🔑 PUT YOUR REAL GEMINI KEY HERE (TEMPORARY) */
-const API_KEY = "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";
-const MODEL = "gemini-2.0-flash";
-
-let memory = [];
-
-function add(role, html){
-  const d = document.createElement("div");
-  d.className = "msg " + role;
-  d.innerHTML = html;
-  chat.appendChild(d);
+function addMessage(text, sender) {
+  const div = document.createElement("div");
+  div.className = "msg " + sender;
+  div.innerText = text;
+  chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
 }
 
-function typingDots(){
-  return `
-    <span class="typing">
-      <span>●</span><span>●</span><span>●</span>
-    </span>`;
-}
+async function sendMessage() {
+  const message = input.value.trim();
+  if (!message) return;
 
-/* Commands */
-function handleCommand(text){
-  if(text === "/clear"){
-    chat.innerHTML = "";
-    memory = [];
-    add("ai","<strong>AI:</strong> Chat cleared.");
-    return true;
-  }
-  if(text === "/help"){
-    add("ai",`
-      <strong>AI:</strong><br>
-      /help – show commands<br>
-      /clear – clear chat
-    `);
-    return true;
-  }
-  return false;
-}
-
-async function send(){
-  const text = input.value.trim();
-  if(!text) return;
-
+  addMessage(message, "user");
   input.value = "";
-  add("user", `<strong>You:</strong> ${text}`);
 
-  if(handleCommand(text)) return;
+  addMessage("Thinking...", "bot");
 
-  const typing = document.createElement("div");
-  typing.className = "msg ai";
-  typing.innerHTML = `<strong>AI:</strong> ${typingDots()}`;
-  chat.appendChild(typing);
-  chat.scrollTop = chat.scrollHeight;
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": "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",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://glenai.local",
+        "X-Title": "GlenAI"
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.0-flash-exp:free",
+        messages: [
+          { role: "user", content: message }
+        ]
+      })
+    });
 
-  memory.push({ role:"user", parts:[{text}] });
+    const data = await response.json();
 
-  try{
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`,
-      {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ contents: memory })
-      }
-    );
+    // remove "Thinking..."
+    chat.removeChild(chat.lastChild);
 
-    const data = await res.json();
-    typing.remove();
+    const reply = data.choices[0].message.content;
+    addMessage(reply, "bot");
 
-    const reply =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No response from model.";
-
-    memory.push({ role:"model", parts:[{text: reply}] });
-    add("ai", `<strong>AI:</strong> ${reply}`);
-
-  }catch(err){
-    typing.remove();
-    add("ai","<strong>AI:</strong> ⚠️ API error or invalid key.");
+  } catch (error) {
+    chat.removeChild(chat.lastChild);
+    addMessage("Error: " + error.message, "bot");
   }
 }
-
-/* EVENTS */
-sendBtn.addEventListener("click", send);
-input.addEventListener("keydown", e=>{
-  if(e.key === "Enter") send();
-});
