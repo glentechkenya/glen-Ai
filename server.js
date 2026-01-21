@@ -25,6 +25,8 @@ app.post("/api/chat", async (req, res) => {
         },
         body: JSON.stringify({
           model: "google/gemini-2.5-flash-preview-09-2025",
+          max_tokens: 1024,
+          temperature: 0.7,
           messages: [
             {
               role: "system",
@@ -58,5 +60,5 @@ app.post("/api/chat", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`GlenAI running on port ${PORT}`);
+  console.log(`🚀 GlenAI running on port ${PORT}`);
 });
