@@ -1,65 +1,66 @@
 const chat = document.getElementById("chat");
 const input = document.getElementById("input");
 
-function renderMessage(text, sender) {
+let history = JSON.parse(localStorage.getItem("glenai")) || [];
+
+history.forEach(m => addMessage(m.text, m.sender));
+
+function addMessage(text, sender) {
   const div = document.createElement("div");
   div.className = "msg " + sender;
-
-  // Detect code blocks ``` ```
-  if (text.includes("```")) {
-    const parts = text.split("```");
-    parts.forEach((part, i) => {
-      if (i % 2 === 1) {
-        const pre = document.createElement("pre");
-        const code = document.createElement("code");
-        code.textContent = part.trim();
-        pre.appendChild(code);
-        div.appendChild(pre);
-      } else {
-        const span = document.createElement("div");
-        span.textContent = part;
-        div.appendChild(span);
-      }
-    });
-  } else {
-    div.textContent = text;
-  }
-
+  div.textContent = text.replace(/\*\*/g,"");
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
+
+  history.push({ text, sender });
+  localStorage.setItem("glenai", JSON.stringify(history));
+}
+
+function typingDots() {
+  const div = document.createElement("div");
+  div.className = "msg bot typing";
+  div.textContent = "typing";
+  chat.appendChild(div);
+
+  let dots = 0;
+  const interval = setInterval(() => {
+    div.textContent = "typing" + ".".repeat(dots++ % 4);
+  }, 400);
+
+  return () => {
+    clearInterval(interval);
+    chat.removeChild(div);
+  };
+}
+
+async function streamText(text) {
+  const div = document.createElement("div");
+  div.className = "msg bot";
+  chat.appendChild(div);
+
+  let i = 0;
+  const interval = setInterval(() => {
+    div.textContent += text[i++];
+    chat.scrollTop = chat.scrollHeight;
+    if (i >= text.length) clearInterval(interval);
+  }, 18);
 }
 
 async function sendMessage() {
-  const message = input.value.trim();
-  if (!message) return;
-
-  renderMessage(message, "user");
+  const msg = input.value.trim();
+  if (!msg) return;
+  addMessage(msg, "user");
   input.value = "";
 
-  const thinking = document.createElement("div");
-  thinking.className = "msg bot";
-  thinking.textContent = "▍ GlenAI thinking…";
-  chat.appendChild(thinking);
-  chat.scrollTop = chat.scrollHeight;
+  const stopTyping = typingDots();
 
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message })
-    });
+  const res = await fetch("/api/chat", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ message: msg })
+  });
 
-    const data = await res.json();
-    chat.removeChild(thinking);
-
-    if (data.error) {
-      renderMessage("Error: " + data.error, "bot");
-      return;
-    }
-
-    renderMessage(data.reply, "bot");
-  } catch (err) {
-    chat.removeChild(thinking);
-    renderMessage("Network error", "bot");
-  }
+  const data = await res.json();
+  stopTyping();
+  streamText(data.reply);
 }
