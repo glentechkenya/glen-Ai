@@ -6,42 +6,146 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{margin:0;font-family:system-ui;background:#050608;color:#fff;height:100vh;display:flex;flex-direction:column}
-#boot{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;z-index:9}
-#boot h1{color:#00f7ff;font-size:32px;animation:pulse 1.5s infinite}
-@keyframes pulse{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}
+:root{
+  --neon:#00f7ff;
+  --bg:#030406;
+  --glass:rgba(255,255,255,.04);
+}
 
-header{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid #0ff3}
-.menu{cursor:pointer;font-size:22px}
-#chat{flex:1;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
-.msg{max-width:85%;padding:12px;border-radius:14px}
-.user{align-self:flex-end;background:#00f7ff;color:#000}
-.bot{background:#ffffff10;border:1px solid #0ff3}
-footer{display:flex;gap:8px;padding:12px;border-top:1px solid #0ff3}
-input{flex:1;padding:12px;border-radius:10px;background:#000;border:1px solid #0ff3;color:#fff}
-button{padding:12px 14px;border-radius:10px;border:none;background:#00f7ff}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:radial-gradient(circle at top,#0a1a22,var(--bg));
+  color:#fff;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+/* ===== PARTICLES ===== */
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+}
+
+/* ===== HEADER ===== */
+header{
+  padding:16px;
+  text-align:center;
+  border-bottom:1px solid #0ff3;
+  background:linear-gradient(180deg,#050b0f,#030406);
+}
+
+header h1{
+  margin:0;
+  font-size:22px;
+  letter-spacing:2px;
+  color:var(--neon);
+  text-shadow:0 0 15px var(--neon);
+}
+
+/* ===== CHAT ===== */
+#chat{
+  flex:1;
+  padding:16px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.msg{
+  max-width:85%;
+  padding:14px;
+  border-radius:16px;
+  animation:fade .25s;
+  position:relative;
+}
+
+.user{
+  align-self:flex-end;
+  background:linear-gradient(135deg,#00f7ff,#00bcd4);
+  color:#000;
+}
+
+.bot{
+  align-self:flex-start;
+  background:var(--glass);
+  border:1px solid #0ff3;
+  backdrop-filter:blur(10px);
+}
+
+/* copy button */
+.copy{
+  position:absolute;
+  right:10px;
+  bottom:6px;
+  font-size:12px;
+  opacity:.5;
+  cursor:pointer;
+}
+.copy:hover{opacity:1}
+
+/* ===== FOOTER ===== */
+footer{
+  display:flex;
+  gap:8px;
+  padding:14px;
+  border-top:1px solid #0ff3;
+  background:#030406;
+}
+
+input{
+  flex:1;
+  padding:14px;
+  border-radius:12px;
+  background:#000;
+  border:1px solid #0ff3;
+  color:#fff;
+  font-size:16px;
+}
+
+button{
+  padding:14px 18px;
+  border-radius:12px;
+  border:none;
+  background:var(--neon);
+  font-weight:600;
+  cursor:pointer;
+}
+
+.clear{
+  background:#111;
+  color:#fff;
+  border:1px solid #333;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1}
+}
 </style>
 </head>
 
 <body>
-<div id="boot"><h1>GLENAI ⚡</h1></div>
+<canvas id="particles"></canvas>
 
 <header>
-  <div>GLENAI</div>
-  <div class="menu" onclick="adminLogin()">☰</div>
+  <h1>GLENAI</h1>
 </header>
 
 <div id="chat"></div>
 
 <footer>
-  <button onclick="startVoice()">🎙️</button>
-  <input id="input" placeholder="Speak or type…" />
+  <button class="clear" onclick="clearChat()">Clear</button>
+  <input id="input" placeholder="Ask GlenAI…" />
   <button onclick="sendMessage()">Send</button>
 </footer>
 
 <script src="script.js"></script>
-<script>
-setTimeout(()=>boot.remove(),1800)
-</script>
 </body>
 </html>
