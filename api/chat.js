@@ -1,9 +1,3 @@
-import { OpenRouter } from "@openrouter/sdk";
-
-const openrouter = new OpenRouter({
-  apiKey: process.env.OPENROUTER_API_KEY
-});
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -12,39 +6,44 @@ export default async function handler(req, res) {
   const { message } = req.body;
 
   try {
-    const completion = await openrouter.chat.send({
-      model: "google/gemini-2.5-flash-preview-09-2025",
-      messages: [
-        {
-          role: "system",
-          content: "You are GlenAI, a futuristic AI created by Glen Tech."
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "X-Title": "GlenAI"
         },
-        {
-          role: "user",
-          content: [
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-preview-09-2025",
+          messages: [
             {
-              type: "text",
-              text: message
+              role: "system",
+              content: "You are GlenAI, a futuristic AI created by Glen Tech."
+            },
+            {
+              role: "user",
+              content: message
             }
           ]
-        }
-      ]
-    });
+        })
+      }
+    );
 
-    const reply =
-      completion.choices?.[0]?.message?.content?.[0]?.text;
+    const data = await response.json();
 
-    if (!reply) {
+    if (!data.choices || !data.choices.length) {
       return res.status(500).json({
-        error: "No response from Gemini model"
+        error: data.error?.message || "No response from model"
       });
     }
 
-    res.status(200).json({ reply });
+    res.status(200).json({
+      reply: data.choices[0].message.content
+    });
 
   } catch (err) {
-    res.status(500).json({
-      error: err.message
-    });
+    res.status(500).json({ error: err.message });
   }
 }
