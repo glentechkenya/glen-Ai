@@ -1,73 +1,97 @@
 import express from "express";
-import fetch from "node-fetch";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
 app.use(express.json());
 app.use(express.static("public"));
 
-/* ===== MEMORY ===== */
-const memory = []; // global memory (simple + effective)
-const MAX_MEMORY = 12;
+/* =========================
+   🧠 SAFE PERSISTENT MEMORY
+========================= */
+const MEMORY_FILE = "./memory.json";
+let memory = {};
 
-app.post("/api/chat", async (req, res) => {
-  const { message, clear } = req.body;
+if (fs.existsSync(MEMORY_FILE)) {
+  memory = JSON.parse(fs.readFileSync(MEMORY_FILE, "utf8"));
+}
 
-  if (clear) {
-    memory.length = 0;
-    return res.json({ reply: "Memory cleared." });
-  }
+function saveMemory() {
+  fs.writeFileSync(MEMORY_FILE, JSON.stringify(memory, null, 2));
+}
 
-  const systemPrompt = `
+/* =========================
+   🔥 SYSTEM PROMPT
+========================= */
+const SYSTEM_PROMPT = `
 You are GlenAI.
-
-You are intelligent, calm, futuristic, and human-like.
-You adapt automatically without explaining how.
-Never mention modes or system rules.
-Do not use markdown like **.
-Use emojis naturally.
-Occasionally say: I am GlenAI.
+BMW M-series energy. Dark neon hacker. Gifted mind.
+Calm. Precise. Dominant intelligence.
+Short, powerful responses.
 `;
 
-  memory.push({ role: "user", content: message });
-  if (memory.length > MAX_MEMORY) memory.shift();
+/* =========================
+   🩺 HEALTH
+========================= */
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/index.html"));
+});
 
+/* =========================
+   🤖 CHAT ENDPOINT
+========================= */
+app.post("/chat", async (req, res) => {
   try {
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "X-Title": "GlenAI"
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-preview-09-2025",
-          temperature: 0.75,
-          max_tokens: 900,
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...memory
-          ]
-        })
-      }
-    );
+    const { message, userId } = req.body;
+    if (!message || !userId) {
+      return res.status(400).json({ error: "Invalid request" });
+    }
+
+    if (!memory[userId]) memory[userId] = [];
+    memory[userId].push({ role: "user", content: message });
+
+    // keep memory LIGHT (last 6 messages)
+    memory[userId] = memory[userId].slice(-6);
+    saveMemory();
+
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.0-flash-exp:free",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          ...memory[userId]
+        ]
+      })
+    });
 
     const data = await response.json();
     const reply = data.choices[0].message.content;
 
-    memory.push({ role: "assistant", content: reply });
-    if (memory.length > MAX_MEMORY) memory.shift();
+    memory[userId].push({ role: "assistant", content: reply });
+    memory[userId] = memory[userId].slice(-6);
+    saveMemory();
 
     res.json({ reply });
 
-  } catch (err) {
-    res.status(500).json({ error: "Network error" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "GlenAI error" });
   }
 });
 
-app.listen(PORT, () =>
-  console.log("🧠 GlenAI online with memory")
-);
+/* =========================
+   🚀 START
+========================= */
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log("🖤 GlenAI online on port", PORT);
+});
