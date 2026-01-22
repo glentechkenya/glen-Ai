@@ -3,12 +3,11 @@ const typing = document.getElementById("typing");
 const input = document.getElementById("text");
 const menu = document.getElementById("menu");
 
-const userId =
-  localStorage.getItem("glenai_id") || crypto.randomUUID();
-localStorage.setItem("glenai_id", userId);
+const userId = localStorage.getItem("gid") || crypto.randomUUID();
+localStorage.setItem("gid", userId);
 
 function toggleMenu() {
-  menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
 }
 
 function addMessage(text, type) {
@@ -18,12 +17,11 @@ function addMessage(text, type) {
 
   if (type === "ai") {
     let i = 0;
-    const interval = setInterval(() => {
-      div.textContent += text[i];
-      i++;
+    const t = setInterval(() => {
+      div.textContent += text[i++];
       messages.scrollTop = messages.scrollHeight;
-      if (i >= text.length) clearInterval(interval);
-    }, 20);
+      if (i >= text.length) clearInterval(t);
+    }, 18);
   } else {
     div.textContent = text;
   }
@@ -37,49 +35,37 @@ async function send() {
   input.value = "";
   typing.style.display = "block";
 
-  try {
-    const res = await fetch("/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text, userId })
-    });
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: text, userId })
+  });
 
-    const data = await res.json();
-    typing.style.display = "none";
-    addMessage(data.reply, "ai");
-
-  } catch {
-    typing.style.display = "none";
-    addMessage("signal lost", "ai");
-  }
+  const data = await res.json();
+  typing.style.display = "none";
+  addMessage(data.reply, "ai");
 }
 
-/* PARTICLES */
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+/* particles */
+const c = document.getElementById("particles");
+const x = c.getContext("2d");
+c.width = innerWidth; c.height = innerHeight;
 
-let particles = Array.from({ length: 50 }, () => ({
-  x: Math.random() * canvas.width,
-  y: Math.random() * canvas.height,
-  r: Math.random() * 2,
-  dx: Math.random() * 0.3,
-  dy: Math.random() * 0.3
+let p = Array.from({length: 40}, () => ({
+  x: Math.random()*c.width,
+  y: Math.random()*c.height,
+  d: Math.random()*0.4
 }));
 
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = "#00ffcc55";
-    ctx.fill();
-    p.x += p.dx;
-    p.y += p.dy;
-    if (p.x > canvas.width) p.x = 0;
-    if (p.y > canvas.height) p.y = 0;
+(function loop(){
+  x.clearRect(0,0,c.width,c.height);
+  p.forEach(o=>{
+    x.fillStyle="#3b82f633";
+    x.beginPath();
+    x.arc(o.x,o.y,2,0,Math.PI*2);
+    x.fill();
+    o.y+=o.d;
+    if(o.y>c.height)o.y=0;
   });
-  requestAnimationFrame(animate);
-}
-animate();
+  requestAnimationFrame(loop);
+})();
