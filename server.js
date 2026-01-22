@@ -1,55 +1,44 @@
 import express from "express";
-import { OpenRouter } from "@openrouter/sdk";
+import cors from "cors";
+import OpenAI from "openai";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
 
-const openrouter = new OpenRouter({
+const openai = new OpenAI({
   apiKey: process.env.OPENROUTER_API_KEY,
-  defaultHeaders: {
-    "HTTP-Referer": "https://developersweb-five.vercel.app/",
-    "X-Title": "GlenAI by GlenTechKenya"
-  }
+  baseURL: "https://openrouter.ai/api/v1"
 });
 
 app.post("/chat", async (req, res) => {
-  const { message } = req.body;
-
-  if (!message) {
-    return res.json({ reply: "Say something 🙂" });
-  }
-
   try {
-    const completion = await openrouter.chat.completions.create({
-      model: "google/gemini-2.5-flash-preview-09-2025",
+    const { message } = req.body;
+
+    const completion = await openai.chat.completions.create({
+      model: "mistralai/mistral-7b-instruct:free",
       messages: [
         {
           role: "system",
           content:
-            "You are GlenAI 🤖✨. Friendly, modern, helpful. Respond like ChatGPT and use emojis naturally."
+            "You are GlenAI 🤖✨ — friendly, futuristic, helpful. Reply like ChatGPT and use emojis naturally."
         },
-        {
-          role: "user",
-          content: message
-        }
+        { role: "user", content: message }
       ]
     });
 
-    const reply =
-      completion.choices?.[0]?.message?.content ??
-      "No response from model.";
-
-    res.json({ reply });
+    res.json({
+      reply: completion.choices[0].message.content
+    });
 
   } catch (err) {
-    console.error("❌ OpenRouter error:", err);
-    res.json({
-      reply: "AI backend error. Check model access or API key."
+    console.error("OPENROUTER ERROR:", err.message);
+    res.status(500).json({
+      reply: "❌ AI backend error. Model or API key issue."
     });
   }
 });
 
 app.listen(3000, () => {
-  console.log("✅ GlenAI running on port 3000");
+  console.log("✅ GlenAI backend running on port 3000");
 });
