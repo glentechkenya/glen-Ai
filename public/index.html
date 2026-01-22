@@ -1,25 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>GlenAI</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>GLENAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div class="chat">
+<canvas id="particles"></canvas>
+<div class="scanlines"></div>
+
+<!-- BOOT SCREEN -->
+<div id="boot" class="boot">
+  <div class="boot-text">
+    initializing secure channel<br>
+    loading neural core<br>
+    glenai online
+  </div>
+</div>
+
+<div class="app hidden" id="app">
+
+  <!-- HEADER -->
   <div class="header">
-    <span class="lock">🔒</span> End-to-End Encrypted
+    <div class="title">GLEN<span>AI</span></div>
+    <div class="status">
+      <span class="dot"></span> secure channel active
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">≡</div>
   </div>
 
-  <div id="messages"></div>
-
-  <div class="typing" id="typing">GlenAI is typing<span>.</span><span>.</span><span>.</span></div>
-
-  <div class="input">
-    <input id="text" placeholder="Message GlenAI">
-    <button onclick="send()">➤</button>
+  <!-- MENU -->
+  <div id="menu" class="menu">
+    <div class="menu-title">inner circle</div>
+    <button onclick="openGroup()">private group</button>
+    <button onclick="openChannel()">broadcast channel</button>
+    <button onclick="toggleVoice()">voice: <span id="voiceState">on</span></button>
+    <button onclick="toggleMenu()">close</button>
   </div>
+
+  <!-- CHAT -->
+  <div id="messages" class="messages"></div>
+
+  <!-- TYPING -->
+  <div id="typing" class="typing">
+    signal detected<span>.</span><span>.</span><span>.</span>
+  </div>
+
+  <!-- INPUT -->
+  <div class="input-bar">
+    <input id="text" placeholder="Speak." autocomplete="off" />
+    <button onclick="send()">◼︎</button>
+  </div>
+
 </div>
 
 <script src="app.js"></script>
