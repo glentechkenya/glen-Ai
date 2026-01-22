@@ -1,9 +1,8 @@
 {
   "name": "glenai",
   "version": "1.0.0",
-  "description": "GlenAI minimal Render-safe backend",
+  "description": "GlenAI – CODING FRIENDLY AI",
   "type": "module",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
