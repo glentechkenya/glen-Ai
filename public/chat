@@ -1,0 +1,30 @@
+app.post("/chat", async (req, res) => {
+  const { message } = req.body;
+
+  try {
+    const completion = await openrouter.chat.completions.create({
+      model: "google/gemini-2.0-flash-exp:free",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are GlenAI 🤖✨ — futuristic, friendly, smart like ChatGPT. Use emojis naturally."
+        },
+        {
+          role: "user",
+          content: message
+        }
+      ]
+    });
+
+    res.json({
+      reply: completion.choices[0].message.content
+    });
+
+  } catch (error) {
+    console.error("OpenRouter ERROR:", error);
+    res.json({
+      reply: "Backend connected, but model access denied ❌"
+    });
+  }
+});
