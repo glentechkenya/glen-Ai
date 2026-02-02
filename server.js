@@ -5,27 +5,30 @@ const app = express();
 app.use(express.static("public"));
 app.use(express.json());
 
-// Gemini chat endpoint
+// OpenRouter chat endpoint
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
 
   try {
     const response = await axios.post(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+      "https://openrouter.ai/api/v1/chat/completions",
       {
-        contents: [{ parts: [{ text: message }]}]
+        model: "openai/gpt-4", // you can swap to another model available on OpenRouter
+        messages: [{ role: "user", content: message }]
       },
       {
-        headers: { "Content-Type": "application/json" },
-        params: { key: process.env.GEMINI_API_KEY }
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
+        }
       }
     );
 
-    const reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "No reply";
+    const reply = response.data?.choices?.[0]?.message?.content || "No reply";
     res.json({ reply });
   } catch (err) {
-    console.error("Gemini API error:", err.message);
-    res.status(500).json({ reply: "❌ Error contacting Gemini API." });
+    console.error("OpenRouter API error:", err.message);
+    res.status(500).json({ reply: "❌ Error contacting OpenRouter API." });
   }
 });
 
