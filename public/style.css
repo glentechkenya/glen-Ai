@@ -1,19 +1,39 @@
 body {
   font-family: 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
-  color: #eee;
   margin: 0;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  overflow: hidden;
+  background: #0f0f0f;
+  color: #eee;
+}
+
+/* Floating background animation */
+.floating-bg {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, #00ffcc 10%, transparent 40%),
+              radial-gradient(circle, #ff00cc 10%, transparent 40%),
+              radial-gradient(circle, #00ccff 10%, transparent 40%);
+  background-size: 400px 400px;
+  animation: float 20s linear infinite;
+  z-index: -1;
+}
+
+@keyframes float {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-50px, -50px); }
+  100% { transform: translate(0,0); }
 }
 
 .chat-container {
   width: 95%;
   max-width: 600px;
   height: 90vh;
-  background: #121212;
+  background: rgba(18,18,18,0.9);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -31,7 +51,7 @@ body {
 
 .message {
   margin: 8px 0;
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
   max-width: 80%;
   word-wrap: break-word;
