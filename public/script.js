@@ -13,6 +13,14 @@ async function sendMessage() {
 
   input.value = "";
 
+  // Show typing indicator
+  const typingMsg = document.createElement("div");
+  typingMsg.className = "message ai";
+  typingMsg.textContent = "AI is typing...";
+  chatWindow.appendChild(typingMsg);
+
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+
   // Call backend
   const res = await fetch("/chat", {
     method: "POST",
@@ -21,11 +29,8 @@ async function sendMessage() {
   });
   const data = await res.json();
 
-  // Show AI reply
-  const aiMsg = document.createElement("div");
-  aiMsg.className = "message ai";
-  aiMsg.textContent = data.reply;
-  chatWindow.appendChild(aiMsg);
+  // Replace typing indicator with AI reply
+  typingMsg.textContent = data.reply;
 
   chatWindow.scrollTop = chatWindow.scrollHeight;
 }
